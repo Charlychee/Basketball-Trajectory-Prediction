@@ -22,6 +22,7 @@ def createSequences(game, input_sequence_length, output_sequence_length):
 
     input_sequences = []
     output_sequences = []
+    player_sequences = []
 
     for event in game['events']:
         moments = event['moments']
@@ -36,31 +37,35 @@ def createSequences(game, input_sequence_length, output_sequence_length):
             
             theInput = [positions[i:i+input_sequence_length] for i in range(0, positions.shape[0]-total_sequence_length+1, input_sequence_length) if positions[i:i+input_sequence_length].shape[0] == input_sequence_length]
             theOutput = [positions[i:i+output_sequence_length,0] for i in range(input_sequence_length, positions.shape[0], input_sequence_length) if positions[i:i+output_sequence_length].shape[0] == output_sequence_length]
+            thePlayer = [positions[i:i+output_sequence_length] for i in range(input_sequence_length, positions.shape[0], input_sequence_length) if positions[i:i+output_sequence_length].shape[0] == output_sequence_length]
 
-            if len(theInput) != 0 and len(theOutput) != 0:
-                input_sequences.append(np.array(theInput)) # (moments, ballplayer, xyz)
+            if len(theInput) != 0 and len(theOutput) != 0 and len(thePlayer) != 0:
+                input_sequences.append(np.array(theInput)) # (moments, ballplayer, xyz) input sequence
                 output_sequences.append(np.array(theOutput)) # (moments, xyz) of ball
+                player_sequences.append(np.array(thePlayer)) # (moments, ballplayer, xyz) output sequence
                 
             
     assertSequences(input_sequences, output_sequences, input_sequence_length, output_sequence_length)
 
     input_sequences = np.concatenate(input_sequences, axis=0) # (batch, horizon, ballplayer, xyz)
     output_sequences = np.concatenate(output_sequences, axis=0) # (batch, horizon, xyz) of ball
+    player_sequences = np.concatenate(player_sequences, axis=0) # (batch, horizon, ballplayer, xyz)
     
-    return input_sequences, output_sequences
+    return input_sequences, output_sequences, player_sequences
 
 def file2Arr(file, input_sequence_length, output_sequence_length):
     game = load_game(file)
     try:
-        input_seq, output_seq = createSequences(game, input_sequence_length, output_sequence_length)
+        input_seq, output_seq, player_seq = createSequences(game, input_sequence_length, output_sequence_length)
     except Exception:
         print(f'Issue with {file}')
         traceback.print_exc()
         return
 
-    with open(file.rstrip('.json')+f'_{input_sequence_length}_{output_sequence_length}_in.pt', 'wb') as fin, open(file.rstrip('.json')+f'_{input_sequence_length}_{output_sequence_length}_out.pt', 'wb') as fout:
+    with open(file.rstrip('.json')+f'_{input_sequence_length}_{output_sequence_length}_in.pt', 'wb') as fin, open(file.rstrip('.json')+f'_{input_sequence_length}_{output_sequence_length}_out.pt', 'wb') as fout, open(file.rstrip('.json')+f'_{input_sequence_length}_{output_sequence_length}_outPlayer.pt', 'wb') as fplayer:
         torch.save(torch.from_numpy(input_seq), fin)
         torch.save(torch.from_numpy(output_seq), fout)
+        torch.save(torch.from_numpy(player_seq), fplayer)
 
 if __name__ == '__main__':
     input_sequence_length, output_sequence_length = 25, 15
