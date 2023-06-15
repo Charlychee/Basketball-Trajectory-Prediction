@@ -58,7 +58,7 @@ def file2Arr(file, input_sequence_length, output_sequence_length):
         traceback.print_exc()
         return
 
-    with open(file.rstrip('.json')+'_in.pt', 'wb') as fin, open(file.rstrip('.json')+'_out.pt', 'wb') as fout:
+    with open(file.rstrip('.json')+f'_{input_sequence_length}_{output_sequence_length}_in.pt', 'wb') as fin, open(file.rstrip('.json')+f'_{input_sequence_length}_{output_sequence_length}_out.pt', 'wb') as fout:
         torch.save(torch.from_numpy(input_seq), fin)
         torch.save(torch.from_numpy(output_seq), fout)
 
