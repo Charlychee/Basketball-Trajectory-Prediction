@@ -144,41 +144,30 @@ def makePrettyGraphs(train_losses,  val_losses):
 
 
 def run_inference(model, src, forecast_window, batch_size, device):
-    tgt = src[:,-1,0] # shape (batch, xyz)
-    tgt = tgt.unsqueeze(1) # shape (batch, seq=1, xyz)
+    tgt = src[:,-1,0,:-1] # shape (batch, xy)
+    tgt = tgt.unsqueeze(1) # shape (batch, seq=1, xy)
     
     # Iteratively concatenate with first element in the prediction
     for _ in range(forecast_window-1):
-        tgt_mask = BallerModel.generate_square_subsequent_mask(
-            dim1=tgt.shape[1],
-            dim2=tgt.shape[1]
-        )
         src_mask = BallerModel.generate_square_subsequent_mask(
             dim1=tgt.shape[1],
             dim2=src.shape[1]
         )
-        tgt_mask = tgt_mask.to(device)
         src_mask = src_mask.to(device)
-        
-        # prediction = model(src, tgt, src_mask, tgt_mask) # shape (batch, seq, xyz)
-        prediction = model(src, tgt) # shape (batch, seq, xyz)
+
+        prediction = model(src, tgt, src_mask, None) # shape (batch, seq, xy)
         
         last_pred_val = prediction[:,-1] # shape (batch, xyz)
-        last_pred_val = last_pred_val.unsqueeze(1) # shape (batch, seq=1, xyz)
+        last_pred_val = last_pred_val.unsqueeze(1) # shape (batch, seq=1, xy)
         
         tgt = torch.cat((tgt, last_pred_val.detach()), 1) # concat on seq dim
         
     # Final prediction
-    tgt_mask = BallerModel.generate_square_subsequent_mask(
-            dim1=tgt.shape[1],
-            dim2=tgt.shape[1]
-        )
     src_mask = BallerModel.generate_square_subsequent_mask(
         dim1=tgt.shape[1],
         dim2=src.shape[1]
     )
-    tgt_mask = tgt_mask.to(device)
     src_mask = src_mask.to(device)
     
-    final_pred = model(src, tgt, src_mask, tgt_mask) # shape (batch, seq, xyz)
+    final_pred = model(src, tgt, src_mask, None) # shape (batch, seq, xy)
     return final_pred
