@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data import random_split
 from torch.utils.data import TensorDataset
+from transformerModel import BallerModel
 
 
 def train(model, loss_func, optim, scheduler, dataloaders, epochs, device, src_mask, tgt_mask, verbose=True):
