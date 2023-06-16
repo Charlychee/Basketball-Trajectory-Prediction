@@ -10,3 +10,5 @@ capture 2D ball movement over 2 seconds reasonably well and some simple physics
 ball movement over 0.6 seconds.
 
 Results: [Colab Link](https://colab.research.google.com/drive/1PkiZAzO_9-pnYX6QtCdRXawosxBe1JWk?usp=sharing)
+
+![Macro Simulation Gif](MacroSimulation.gif)
