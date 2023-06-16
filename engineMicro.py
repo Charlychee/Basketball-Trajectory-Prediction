@@ -32,7 +32,7 @@ def train(model, loss_func, optim, scheduler, dataloaders, epochs, device, src_m
     for epoch in range(epochs):
         model.train()
         train_loss, running_loss, total_count,running_total_count = 0,0,0,0
-        for  i, (X,y) in enumerate(train_dl):     
+        for  i, (X,y,_) in enumerate(train_dl):     
             X = X.to(device)
             y = y.to(device)
             
@@ -99,7 +99,7 @@ def test(model, loss_func, dataloader, device, src_mask, tgt_mask):
     loss_total,total_count = 0,0
   
     with torch.no_grad():
-            for X,y in dataloader:
+            for X,y,_ in dataloader:
                 X = X.to(device)
                 y = y.to(device)
                 total_count += y.shape[0]
@@ -142,7 +142,6 @@ def makePrettyGraphs(train_losses,  val_losses):
 def run_inference(model, src, forecast_window, batch_size, device):
     tgt = src[:,-1,0] # shape (batch, xyz)
     tgt = tgt.unsqueeze(1) # shape (batch, seq=1, xyz)
-    # print(tgt[0])
     
     # Iteratively concatenate with first element in the prediction
     for _ in range(forecast_window-1):
@@ -164,7 +163,6 @@ def run_inference(model, src, forecast_window, batch_size, device):
         last_pred_val = last_pred_val.unsqueeze(1) # shape (batch, seq=1, xyz)
         
         tgt = torch.cat((tgt, last_pred_val.detach()), 1) # concat on seq dim
-        # print(tgt[0])
         
     # Final prediction
     tgt_mask = BallerModel.generate_square_subsequent_mask(
@@ -179,5 +177,4 @@ def run_inference(model, src, forecast_window, batch_size, device):
     src_mask = src_mask.to(device)
     
     final_pred = model(src, tgt, src_mask, tgt_mask) # shape (batch, seq, xyz)
-    # print(final_pred[0])
     return final_pred

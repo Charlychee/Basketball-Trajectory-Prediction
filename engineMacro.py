@@ -32,7 +32,7 @@ def train(model, loss_func, optim, scheduler, dataloaders, epochs, device, src_m
     for epoch in range(epochs):
         model.train()
         train_loss, running_loss, total_count,running_total_count = 0,0,0,0
-        for  i, (X,y) in enumerate(train_dl):     
+        for  i, (X,y,_) in enumerate(train_dl):     
             X = X.to(device)
             y = y.to(device)
             y = y[:,:,:-1]
@@ -100,7 +100,7 @@ def test(model, loss_func, dataloader, device, src_mask, tgt_mask):
     loss_total,total_count = 0,0
   
     with torch.no_grad():
-            for X,y in dataloader:
+            for X,y,_ in dataloader:
                 X = X.to(device)
                 y = y.to(device)
                 total_count += y.shape[0]
