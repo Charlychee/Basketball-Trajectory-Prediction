@@ -14,6 +14,9 @@ Results: [Colab Link](https://colab.research.google.com/drive/1PkiZAzO_9-pnYX6Qt
 - Blue: Input Trajectory Sequence
 - Red: Ground Truth Output Trajectory Sequence
 - Green: Predicted Output Trajectory Sequence
-- 
+
+#### Cross-Court Dribble
 ![Dribble Example](DribbleExample.gif)
+
+#### Ball Pass
 ![Pass Example](PassExample.gif)
