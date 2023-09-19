@@ -11,7 +11,8 @@ ball movement over 0.6 seconds.
 
 Results: [Colab Link](https://colab.research.google.com/drive/1PkiZAzO_9-pnYX6QtCdRXawosxBe1JWk?usp=sharing)
 
-![Macro Simulation Gif](MacroSimulation.gif)
 - Blue: Input Trajectory Sequence
 - Red: Ground Truth Output Trajectory Sequence
 - Green: Predicted Output Trajectory Sequence
+![Dribble Example](DribbleExample.gif)
+![Pass Example](PassExample.gif)
